@@ -1,0 +1,7 @@
+resources:
+- manager.yaml
+
+images:
+- name: controller
+  newName: eu.gcr.io/cloud-native-coding/cnde-operator
+  newTag: latest

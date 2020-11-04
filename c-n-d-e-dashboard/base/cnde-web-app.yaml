@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: saas-web
+  labels:
+    control-plane: saas-web
+    role: frontend
+spec:
+  selector:
+    matchLabels:
+      control-plane: saas-web
+      role: frontend
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        control-plane: saas-web
+        role: frontend
+    spec:
+      containers:
+        - image: web:latest
+          name: saas-web
+          env:
+            - name: API_BASE
+              value: http://saas-api:8000

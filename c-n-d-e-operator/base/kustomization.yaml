@@ -1,0 +1,21 @@
+
+
+bases:
+- crd
+- manager
+- grant_role_binding.yaml
+
+patchesStrategicMerge:
+- manager_patch.yaml
+- manager_auth_proxy_patch.yaml
+
+secretGenerator:
+- name: cnde-oauth
+  envs: 
+    - oauth.properties
+  type: Opaque
+
+generatorOptions:
+  disableNameSuffixHash: true
+
+namespace: c-n-d-e-system

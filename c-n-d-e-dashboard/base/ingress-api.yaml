@@ -1,0 +1,30 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    # Enable client certificate authentication
+    nginx.ingress.kubernetes.io/auth-tls-verify-client: "on"
+    # Create the secret containing the trusted ca certificates
+    nginx.ingress.kubernetes.io/auth-tls-secret: "$(THIS_NAMESPACE)/api-ca-secret"
+    # Specify the verification depth in the client certificates chain
+    nginx.ingress.kubernetes.io/auth-tls-verify-depth: "1"
+    # Specify an error page to be redirected to verification errors
+    nginx.ingress.kubernetes.io/auth-tls-error-page: "https://cloud-native-coding.dev/tls-verification-error/"
+    # Specify if certificates are passed to upstream server
+    nginx.ingress.kubernetes.io/auth-tls-pass-certificate-to-upstream: "false"
+    kubernetes.io/ingress.class: nginx
+    kubernetes.io/tls-acme: "true"
+  name: saas-api
+spec:
+  rules:
+  - host: api.$(THIS_NAMESPACE).$(THIS_DOMAIN)
+    http:
+      paths:
+      - backend:
+          serviceName: saas-api
+          servicePort: 8000
+        path: /
+  tls:
+  - hosts:
+    - api.$(THIS_NAMESPACE).$(THIS_DOMAIN)
+    secretName: saas-api-tls

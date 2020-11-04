@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: saas-api
+  labels:
+    control-plane: saas-api
+    role: backend
+spec:
+  selector:
+    matchLabels:
+      control-plane: saas-api
+      role: backend
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        control-plane: saas-api
+        role: backend
+    spec:
+      containers:
+        - image: controller:latest
+          name: saas-api
+          imagePullPolicy: Always
+          envFrom:
+          - configMapRef:
+              name: postgresql-env
+          env:
+          - name: POSTGRES_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: postgresql-pw
+                key: postgres-password
+      terminationGracePeriodSeconds: 10

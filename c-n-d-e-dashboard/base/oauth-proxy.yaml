@@ -1,0 +1,76 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: saas-web-oauth-proxy
+  labels:
+    control-plane: saas-web
+    role: oauth
+spec:
+  selector:
+    matchLabels:
+      control-plane: saas-web
+      role: oauth
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        control-plane: saas-web
+        role: oauth
+    spec:
+      containers:
+        - args:
+            - --cookie-domain=cnde.$(THIS_NAMESPACE).$(THIS_DOMAIN)
+            - --oidc-issuer-url=https://keycloak.$(THIS_DOMAIN)/auth/realms/$(THIS_NAMESPACE)
+            - --cookie-name=auth
+            - --cookie-refresh=23h
+            - --cookie-secure=true
+            - --email-domain=*
+            - --http-address=0.0.0.0:4180
+            - --pass-access-token=true
+            - --provider=oidc
+            - --set-xauthrequest=true
+            - --tls-cert-file=
+            - --upstream=file:///dev/null
+            - --ssl-insecure-skip-verify=true
+          env:
+            - name: OAUTH2_PROXY_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  key: client_id
+                  name: cnde-web-oauth-proxy
+            - name: OAUTH2_PROXY_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  key: client_secret
+                  name: cnde-web-oauth-proxy
+            - name: OAUTH2_PROXY_COOKIE_SECRET
+              valueFrom:
+                secretKeyRef:
+                  key: cookie_secret
+                  name: cnde-web-oauth-proxy
+          image: bitnami/oauth2-proxy:5
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /ping
+              port: http
+              scheme: HTTP
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          name: oauth2-proxy
+          ports:
+            - containerPort: 4180
+              name: http
+              protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /ping
+              port: http
+              scheme: HTTP
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1

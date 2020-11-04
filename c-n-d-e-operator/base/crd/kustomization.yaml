@@ -1,0 +1,6 @@
+resources:
+- bases/c-n-d-e.kube-platform.dev_builders.yaml
+- bases/c-n-d-e.kube-platform.dev_devenvs.yaml
+
+configurations:
+- kustomizeconfig.yaml

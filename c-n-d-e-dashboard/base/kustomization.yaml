@@ -1,0 +1,64 @@
+
+# this namespace is also part of an Ingress Annotation
+namespace: cnde-system
+
+configurations:
+- .kustomize/config/varreference.yaml
+
+bases:
+  - postgresql
+
+resources:
+  - cnde-rest-api.yaml
+  - cnde-web-app.yaml
+  - services.yaml
+  - ingress-web.yaml
+  - ingress-api.yaml
+  - oauth-proxy.yaml
+
+images:
+  - name: controller
+    newName: eu.gcr.io/cloud-native-coding/cnde-rest-api
+    newTag: latest
+  - name: web
+    newName: eu.gcr.io/cloud-native-coding/cnde-web-app
+    newTag: latest
+
+secretGenerator:
+  - name: cnde-web-oauth-proxy
+    literals:
+      - client_id=c-n-d-e
+      - client_secret=f8dba11e-28fd-4299-a953-d2e54d1ed654
+      - cookie_secret=WhatEver123456888888
+  - name: postgresql-pw
+    literals:
+      - postgres-password=UyH2EccNqK
+
+configMapGenerator:
+  - name: postgresql-env
+    literals:
+      - POSTGRES_USER=saas-api
+      - POSTGRES_SERVER=saas-api-db
+      - POSTGRES_DATABASE=saas-api
+  - name: cnde-config
+    literals:
+      - DOMAIN=cloud-native-coding.dev
+
+vars:
+- name: THIS_NAMESPACE
+  objref:
+    kind: Ingress
+    name: saas-api
+    apiVersion: extensions/v1beta1
+  fieldref:
+    fieldpath: metadata.namespace
+- name: THIS_DOMAIN
+  objref:
+    kind: ConfigMap
+    name: cnde-config
+    apiVersion: v1
+  fieldref:
+    fieldpath: data.DOMAIN
+
+generatorOptions:
+  disableNameSuffixHash: true

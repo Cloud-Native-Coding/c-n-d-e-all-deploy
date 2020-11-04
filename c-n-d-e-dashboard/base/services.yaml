@@ -1,0 +1,40 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: saas-api
+spec:
+  selector:
+    control-plane: saas-api
+    role: backend
+  ports:
+    - protocol: TCP
+      port: 8000
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: saas-web
+spec:
+  selector:
+    control-plane: saas-web
+    role: frontend
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 3000
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: saas-web-oauth-proxy
+spec:
+  ports:
+  - name: http
+    port: 4180
+  selector:
+    control-plane: saas-web
+    role: oauth

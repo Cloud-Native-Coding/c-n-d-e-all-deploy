@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: saas-controller
+  labels:
+    control-plane: saas-controller
+spec:
+  selector:
+    matchLabels:
+      control-plane: saas-controller
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        control-plane: saas-controller
+    spec:
+      containers:
+        - image: controller:latest
+          name: saas-controller
+          imagePullPolicy: Always
+          envFrom:
+            - configMapRef:
+                name: saas-controller-config
+          env:
+            - name: CNDE_NS
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+          resources:
+            limits:
+              cpu: 100m
+              memory: 30Mi
+            requests:
+              cpu: 100m
+              memory: 20Mi
+          volumeMounts:
+            - name: api-client-cert
+              mountPath: "/certs"
+              readOnly: true
+      terminationGracePeriodSeconds: 10
+      volumes:
+        - name: api-client-cert
+          secret:
+            secretName: api-client-cert
