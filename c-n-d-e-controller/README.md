@@ -2,7 +2,7 @@
 
 ## Installation
 
-1. Setup a new Cluster at running Dashboard instance. Note values for IPA Key and Cluster Name
+1. Setup a new Cluster at running Dashboard instance. Note values for API Key and Cluster Name
 2. Edit <TENANT>/kustomization.yaml
 
 change literals for config map `saas-controller-config` for `CNDE_API_KEY` and `CNDE_CLUSTER_NAME`
