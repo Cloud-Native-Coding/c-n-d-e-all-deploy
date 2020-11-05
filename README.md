@@ -13,6 +13,7 @@ The usual 2 cluster setup is as follows:
   + a WEB-Dashboard instance
   + a API for c-n-d-e Controller instances
 * Cluster 2 (**IDE cluster**) contains:
+  + a Keycloak instance for IDE authentication
   + c-n-d-e Controller calling the API
   + c-n-d-e Operator creating and deleting IDEs on Cluster 2
 
